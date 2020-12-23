@@ -14,12 +14,6 @@
                             "label": "Control your Remote Computer via SSH and WOL. You must enable your SSH server on your remote computer for Power OFF and configure Wake on LAN for Power ON."
                         },
                         {
-                            "name": "ip_address",
-                            "type": "text",
-                            "label": "IP Address:",
-                            "value": ""
-                        },
-                        {
                             "name": "mac_address",
                             "type": "text",
                             "label": "MAC Address:",
@@ -38,15 +32,9 @@
                             "value": ""
                         },
                         {
-                            "name": "user_password",
-                            "type": "password",
-                            "label": "User Password:",
-                            "value": ""
-                        },
-                        {
-                            "name": "sudo_password",
-                            "type": "password",
-                            "label": "Sudo/Root Password:",
+                            "name": "key_file",
+                            "type": "text",
+                            "label": "Private Key File:",
                             "value": ""
                         }
                     ]
