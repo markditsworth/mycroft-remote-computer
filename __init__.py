@@ -36,7 +36,7 @@ class RemoteComputerSkill(MycroftSkill):
     def runSSHCommand(self,command,ip_address,port,user,key):
         try:
             client = paramiko.SSHClient()
-            client.connect(ip_address, username=user, porrt=port, pkey=key)
+            client.connect(ip_address, username=user, port=port, pkey=key)
             stdin, stdout, stderr = client.exec_command(command)
             client.close()
             return stdin, stdout, stderr
