@@ -36,8 +36,9 @@ class RemoteComputerSkill(MycroftSkill):
     def runSSHCommand(self,command,ip_address,port,user,key):
         try:
             client = paramiko.SSHClient()
+            pk = paramiko.RSAKey.from_private_key(open('/home/pi/.ssh/{}'.format(key)))
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy()) 
-            client.connect(ip_address, username=user, port=port, pkey=key)
+            client.connect(ip_address, username=user, port=port, pkey=pk)
             stdin, stdout, stderr = client.exec_command(command)
             client.close()
             return stdin, stdout, stderr
