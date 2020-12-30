@@ -63,7 +63,6 @@ class RemoteComputerSkill(MycroftSkill):
             config = self.config_core.get("RemoteComputerSkill", {})
             if not config == {}:
                 self.log.info('config not empty')
-                self.log.info('{}'.format(config['mac_address']))
                 mac_address = str(config.get("mac_address"))
                 port = int(config.get("port"))
                 user = str(config.get("user"))
