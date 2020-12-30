@@ -60,8 +60,9 @@ class RemoteComputerSkill(MycroftSkill):
     @intent_handler(IntentBuilder("LaunchTerminal").require("Open").require("Terminal"))
     def handle_launch_terminal_intent(self, message):
         try:
+            self.log.info('testing')
             config = self.config_core.get("RemoteComputerSkill", {})
-            
+            self.log.info('testing again')
             if not config == {}:
                 mac_address = str(self.config.get("mac_address"))
                 port = int(self.config.get("port"))
