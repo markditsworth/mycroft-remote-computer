@@ -34,7 +34,7 @@ class RemoteComputerSkill(MycroftSkill):
        return ip
    
     def runSSHCommand(self, command, ip_address, port, user, key):
-        ssh_command = ['ssh', '-i', key, '{}@{}:{}'.format(user,ip_address,port), command]
+        ssh_command = ['ssh', '-i', '/home/pi/.ssh/{}'.format(key), '{}@{}'.format(user,ip_address), '-p', '{}'.format(port), command]
         try:
             subprocess.run(ssh_command, check=True)
             return
