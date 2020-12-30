@@ -56,9 +56,8 @@ class RemoteComputerSkill(MycroftSkill):
             self.speak_dialog("connection.error")
             self.log.error(e)
             return
-   
-    @intent_handler(IntentBuilder("LaunchTerminal").require("Open").require("Terminal"))
-    def handle_launch_terminal_intent(self, message):
+        
+    def remoteAction(self, command, voice_response):
         try:
             config = self.config_core.get("RemoteComputerSkill", {})
             if not config == {}:
@@ -81,8 +80,16 @@ class RemoteComputerSkill(MycroftSkill):
             return
         
         ip_addr = self.macToIp(mac_address)
-        self.speak_dialog("launching.terminal")
-        _ = self.runSSHCommand('export DISPLAY=:0 && terminator',ip_addr,port,user,key_file)
+        self.speak_dialog(voice_response)
+        _ = self.runSSHCommand(command,ip_addr,port,user,key_file)
+        
+    @intent_handler(IntentBuilder("LaunchTerminal").require("Open").require("Terminal"))
+    def handle_launch_terminal_intent(self, message):
+        self.remoteAction('export DISPLAY=:0 && terminator','launching.terminal')
+    
+    @intent_handler(IntentBuilder("LaunchSpyder").require("Open").require("Spyder"))
+    def handle_launch_spyder_intent(self, message):
+        self.remoteAction('export DISPLAY=:0 && spyder --workdir=/home/markd/Projects', 'launching.spyder')
                 
 #    @intent_handler(IntentBuilder("ComputerOnIntent").require("Computer")
 #                    .require("On").optionally("Turn"))
