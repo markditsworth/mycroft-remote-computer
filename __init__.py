@@ -64,10 +64,10 @@ class RemoteComputerSkill(MycroftSkill):
             if not config == {}:
                 self.log.info('config not empty')
                 self.log.info('{}'.format(config['mac_address']))
-                mac_address = str(self.config.get("mac_address"))
-                port = int(self.config.get("port"))
-                user = str(self.config.get("user"))
-                key_file = str(self.config.get("key_file"))
+                mac_address = str(config.get("mac_address"))
+                port = int(config.get("port"))
+                user = str(config.get("user"))
+                key_file = str(config.get("key_file"))
 
             else:
                 self.log.info('config empty')
