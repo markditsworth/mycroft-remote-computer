@@ -33,10 +33,20 @@ class RemoteComputerSkill(MycroftSkill):
        ip = re.findall(r'.*{}'.format(mac_address),out)[0].split()[0]
        return ip
    
-    def runSSHCommand(self,command,ip_address,port,user,key):
+    def runSSHCommand(self, command, ip_address, port, user, key):
+        ssh_command = ['ssh', '-i', key, '{}@{}:{}'.format(user,ip_address,port), command]
+        try:
+            subprocess.run(ssh_command, check=True)
+            return
+        except Exception as e:
+            self.speak_dialog("connection.error")
+            self.log.error(e)
+            return
+    
+    def runSSHCommandParamiko(self,command,ip_address,port,user,key):
         try:
             client = paramiko.SSHClient()
-            pk = paramiko.RSAKey.from_private_key(open('/home/pi/.ssh/{}'.format(key)))
+            pk = paramiko.RSAKey.from_private_key_file(open('/home/pi/.ssh/{}'.format(key)))
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy()) 
             client.connect(ip_address, username=user, port=port, pkey=pk)
             stdin, stdout, stderr = client.exec_command(command)
