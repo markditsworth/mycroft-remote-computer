@@ -81,7 +81,7 @@ class RemoteComputerSkill(MycroftSkill):
         
         ip_addr = self.macToIp(mac_address)
         self.speak_dialog(voice_response)
-        _ = self.runSSHCommand(command,ip_addr,port,user,key_file)
+        _ = self.runSSHCommand(command,ip_addr,port,user,key_file)     
         
     @intent_handler(IntentBuilder("LaunchTerminal").require("Open").require("Terminal"))
     def handle_launch_terminal_intent(self, message):
@@ -90,6 +90,12 @@ class RemoteComputerSkill(MycroftSkill):
     @intent_handler(IntentBuilder("LaunchSpyder").require("Open").require("Spyder"))
     def handle_launch_spyder_intent(self, message):
         self.remoteAction('export DISPLAY=:0 && spyder --workdir=/home/markd/Projects', 'launching.spyder')
+    
+    @intent_handler(IntentBuilder("LaunchCCS").require("Open").require("Code").require("Composer").optionally("Studio"))
+    def handle_launch_ccs_intent(self, message):
+        # get working directory if supplied
+        utt = message.data['utterance']
+        self.log.info("{}".format(utt))
                 
 #    @intent_handler(IntentBuilder("ComputerOnIntent").require("Computer")
 #                    .require("On").optionally("Turn"))
