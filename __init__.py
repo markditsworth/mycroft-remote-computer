@@ -1,3 +1,7 @@
+# Copyright 2020 M. Ditsworth
+#
+# Based on original material under the following copyright
+#
 # Copyright 2018 S. M. Estiaque Ahmed
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,11 +17,8 @@
 # limitations under the License.
 
 import re
-#import sys
 import paramiko
 import subprocess
-#import ipaddress
-#from wakeonlan import send_magic_packet
 
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill
@@ -93,7 +94,7 @@ class RemoteComputerSkill(MycroftSkill):
     
     @intent_handler(IntentBuilder("LaunchCCS").require("Open").require("Code").require("Composer").optionally("Studio"))
     def handle_launch_ccs_intent(self, message):
-        # get working directory if supplied
+        # get working directory if supplied use PEG to pull out the workspace, if any
         utt = message.data['utterance']
         self.log.info("{}".format(utt))
                 
