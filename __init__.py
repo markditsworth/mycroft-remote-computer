@@ -97,6 +97,15 @@ class RemoteComputerSkill(MycroftSkill):
         # get working directory if supplied use PEG to pull out the workspace, if any
         utt = message.data['utterance']
         self.log.info("{}".format(utt))
+    
+    @intent_handler(IntentBuilder("CreateNewProject").require("Create").require("Project").optionally("New"))
+    def handle_create_new_project_intent(self, message):
+        utt = message.data['utterance']
+        self.log.info("{}".format(utt))
+        
+    @intent_handler(IntentBuilder("LaunchJupyterNotebook").require("Open").require("Jupiter").optionally("Notebook"))
+    def handle_launch_jupyter_notebook_intent(self, message):
+        self.remoteAction('export DISPLAY=:0 && jupyter-notebook', 'launching.jupyter')
                 
 #    @intent_handler(IntentBuilder("ComputerOnIntent").require("Computer")
 #                    .require("On").optionally("Turn"))
