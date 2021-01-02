@@ -82,10 +82,15 @@ class RemoteComputerSkill(MycroftSkill):
     @intent_handler(IntentBuilder("LaunchSpyder").require("Open").require("Spyder"))
     def handle_launch_spyder_intent(self, message):
         utt = message.data['utterance']
-        parsed_utt = self.parseLaunchApplicationCommand(utt)
-        workspace = '-'.join(parsed_utt['workingDirectory'])
-        self.log.info('workspace: {}'.format(workspace))
-        if not workspace:
+        try:
+            parsed_utt = self.parseLaunchApplicationCommand(utt)
+            workspace = '-'.join(parsed_utt['workingDirectory'])
+            self.log.info('workspace: {}'.format(workspace))
+            if not workspace:
+                workspace = ''
+        except Exception as e:
+            self.speak_dialog('invalid',{'word':'parser'})
+            self.log.error(e)
             workspace = ''
             
         self.remoteAction('export DISPLAY=:0 && spyder --workdir=/home/markd/Projects/{}'.format(workspace),
