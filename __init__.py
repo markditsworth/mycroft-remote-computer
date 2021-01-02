@@ -19,8 +19,8 @@
 import re
 import subprocess
 
-from peg import launchApplicationGrammar
-from tatsu.util import asjson
+# from peg import launchApplicationGrammar
+# from tatsu.util import asjson
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill
 from mycroft.skills.core import intent_handler
@@ -71,9 +71,9 @@ class RemoteComputerSkill(MycroftSkill):
         self.speak_dialog(voice_response)
         _ = self.runSSHCommand(command,ip_addr,port,user,key_file)  
     
-    def parseLaunchApplicationCommand(self, utt):
-        parser = launchApplicationGrammar.LaunchApplicationGrammarParser()
-        return asjson(parser.parse(utt))
+    # def parseLaunchApplicationCommand(self, utt):
+    #     parser = launchApplicationGrammar.LaunchApplicationGrammarParser()
+    #     return asjson(parser.parse(utt))
         
     @intent_handler(IntentBuilder("LaunchTerminal").require("Open").require("Terminal"))
     def handle_launch_terminal_intent(self, message):
@@ -81,19 +81,7 @@ class RemoteComputerSkill(MycroftSkill):
     
     @intent_handler(IntentBuilder("LaunchSpyder").require("Open").require("Spyder"))
     def handle_launch_spyder_intent(self, message):
-        utt = message.data['utterance']
-        try:
-            parsed_utt = self.parseLaunchApplicationCommand(utt)
-            workspace = '-'.join(parsed_utt['workingDirectory'])
-            self.log.info('workspace: {}'.format(workspace))
-            if not workspace:
-                workspace = ''
-        except Exception as e:
-            self.speak_dialog('invalid',{'word':'parser'})
-            self.log.error(e)
-            workspace = ''
-            
-        self.remoteAction('export DISPLAY=:0 && spyder --workdir=/home/markd/Projects/{}'.format(workspace),
+        self.remoteAction('export DISPLAY=:0 && spyder --workdir=/home/markd/Projects/',
                           'launching.spyder')
     
     @intent_handler(IntentBuilder("LaunchCCS").require("Open").require("Code").require("Composer").optionally("Studio"))
