@@ -44,6 +44,17 @@ class RemoteComputerSkill(MycroftSkill):
             self.speak_dialog("connection.error")
             self.log.error(e)
             return
+    
+    def runSSHCommandWithResult(self, command, ip_address, port, user, key):
+        ssh_command = ['ssh', '-i', '/home/pi/.ssh/{}'.format(key), '{}@{}'.format(user,ip_address), '-p', '{}'.format(port), command]
+        try:
+            output = subprocess.run(ssh_command, capture_output=True, check=True)
+            return output.stdout
+        
+        except Exception as e:
+            self.speak_dialog("connection.error")
+            self.log.error(e)
+            return None
         
     def remoteAction(self, command, voice_response):
         try:
@@ -76,6 +87,12 @@ class RemoteComputerSkill(MycroftSkill):
     # def parseLaunchApplicationCommand(self, utt):
     #     parser = launchApplicationGrammar.LaunchApplicationGrammarParser()
     #     return asjson(parser.parse(utt))
+    
+    def createNewProject(self, project_name):
+        project_name_string = ' '.join(project_name)
+        project_name_ = '_'.join(project_name)
+        self.remoteAction('mkdir /home/markd/Projects/{}'.format(project_name_),
+                          ['creating.project',{'word':project_name_string}])
         
     @intent_handler(IntentBuilder("LaunchTerminal").require("Open").require("Terminal"))
     def handle_launch_terminal_intent(self, message):
@@ -98,11 +115,7 @@ class RemoteComputerSkill(MycroftSkill):
     def handle_create_new_project_intent(self, message):
         utt = message.data['utterance'].split(' ')
         idx = utt.index('project') - 1
-        project_name_string = ' '.join(utt[idx:])
-        project_name_ = '_'.join(utt[idx:])
-        self.log.info("{}".format(project_name_))
-        self.remoteAction('mkdir /home/markd/Projects/{}'.format(project_name_),
-                          ['creating.project',{'word':project_name_string}])
+        self.createNewProject(utt[idx:])
         
     @intent_handler(IntentBuilder("LaunchJupyterNotebook").require("Open").require("Jupiter").optionally("Notebook"))
     def handle_launch_jupyter_notebook_intent(self, message):
