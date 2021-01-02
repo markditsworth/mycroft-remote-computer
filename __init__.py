@@ -117,7 +117,7 @@ class RemoteComputerSkill(MycroftSkill):
         idx = utt.index('project') + 1
         self.createNewProject(utt[idx:])
         
-    @intent_handler(IntentBuilder("LaunchJupyterNotebook").require("Open").require("Jupiter").optionally("Notebook"))
+    @intent_handler(IntentBuilder("LaunchJupyterNotebook").require("Open").require("Jupyter").optionally("Notebook"))
     def handle_launch_jupyter_notebook_intent(self, message):
         self.remoteAction('export DISPLAY=:0 && jupyter-notebook --notebook-dir /home/markd/Projects', ['launch.app',{'word':'jupiter notebook'}])
                 
