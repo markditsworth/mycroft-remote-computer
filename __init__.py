@@ -66,7 +66,11 @@ class RemoteComputerSkill(MycroftSkill):
             return
         
         ip_addr = self.macToIp(mac_address)
-        self.speak_dialog(voice_response)
+        if len(voice_response) > 1:
+            self.speak_dialog(voice_response[0], voice_response[1])
+        else:
+            self.speak_dialog(voice_response[0])
+            
         _ = self.runSSHCommand(command,ip_addr,port,user,key_file)  
     
     # def parseLaunchApplicationCommand(self, utt):
@@ -75,12 +79,12 @@ class RemoteComputerSkill(MycroftSkill):
         
     @intent_handler(IntentBuilder("LaunchTerminal").require("Open").require("Terminal"))
     def handle_launch_terminal_intent(self, message):
-        self.remoteAction('export DISPLAY=:0 && terminator','launching.terminal')
+        self.remoteAction('export DISPLAY=:0 && terminator',['launch.app',{'word':'terminal'}])
     
     @intent_handler(IntentBuilder("LaunchSpyder").require("Open").require("Spyder"))
     def handle_launch_spyder_intent(self, message):
         self.remoteAction('export DISPLAY=:0 && spyder --workdir=/home/markd/Projects/',
-                          'launching.spyder')
+                          ['launch.app',{'word':'spider'}])
     
     @intent_handler(IntentBuilder("LaunchCCS").require("Open").require("Code").require("Composer").optionally("Studio"))
     def handle_launch_ccs_intent(self, message):
@@ -88,20 +92,21 @@ class RemoteComputerSkill(MycroftSkill):
         #utt = message.data['utterance']
         #self.log.info("{}".format(utt))
         self.remoteAction('export DISPLAY=:0 && /home/markd/ti/ccs1000/ccs/eclipse/ccstudio',
-                          'launching.ccs')
+                          ['launch.app',{'word':'code composer studio'}])
     
     @intent_handler(IntentBuilder("CreateNewProject").require("Create").require("Project").optionally("New"))
     def handle_create_new_project_intent(self, message):
         utt = message.data['utterance'].split(' ')
-        idx = utt.index('project')
+        idx = utt.index('project') - 1
         project_name_string = ' '.join(utt[idx:])
         project_name_ = '_'.join(utt[idx:])
         self.log.info("{}".format(project_name_))
-        self.remoteAction('mkdir /home/markd/Projects/{}'.format(project_name_), 'creating.project')
+        self.remoteAction('mkdir /home/markd/Projects/{}'.format(project_name_),
+                          ['creating.project',{'word':project_name_string}])
         
     @intent_handler(IntentBuilder("LaunchJupyterNotebook").require("Open").require("Jupiter").optionally("Notebook"))
     def handle_launch_jupyter_notebook_intent(self, message):
-        self.remoteAction('export DISPLAY=:0 && jupyter-notebook', 'launching.jupyter')
+        self.remoteAction('export DISPLAY=:0 && jupyter-notebook', ['launch.app',{'word':'jupiter notebook'}])
                 
 #    @intent_handler(IntentBuilder("ComputerOnIntent").require("Computer")
 #                    .require("On").optionally("Turn"))
