@@ -82,7 +82,7 @@ class RemoteComputerSkill(MycroftSkill):
     @intent_handler(IntentBuilder("LaunchSpyder").require("Open").require("Spyder"))
     def handle_launch_spyder_intent(self, message):
         utt = message.data['utterance']
-        parsed_utt = parseLaunchApplicationCommand(utt)
+        parsed_utt = self.parseLaunchApplicationCommand(utt)
         workspace = parsed_utt['workingDirectory']
         self.log.info('workspace: {}'.format(workspace))
         if not workspace:
