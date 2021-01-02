@@ -49,14 +49,12 @@ class RemoteComputerSkill(MycroftSkill):
         try:
             config = self.config_core.get("RemoteComputerSkill", {})
             if not config == {}:
-                self.log.info('config not empty')
                 mac_address = str(config.get("mac_address"))
                 port = int(config.get("port"))
                 user = str(config.get("user"))
                 key_file = str(config.get("key_file"))
 
             else:
-                self.log.info('config empty')
                 mac_address = str(self.settings.get("mac_address"))
                 port = int(self.settings.get("port"))
                 user = str(self.settings.get("user"))
@@ -94,9 +92,10 @@ class RemoteComputerSkill(MycroftSkill):
     
     @intent_handler(IntentBuilder("CreateNewProject").require("Create").require("Project").optionally("New"))
     def handle_create_new_project_intent(self, message):
-        project_name = message.data['utterance'][2:]
-        project_name_string = ' '.join(project_name)
-        project_name_ = '_'.join(project_name)
+        utt = message.data['utterance'].split(' ')
+        idx = utt.index('project')
+        project_name_string = ' '.join(utt[idx:])
+        project_name_ = '_'.join(utt[idx:])
         self.log.info("{}".format(project_name_))
         self.remoteAction('mkdir /home/markd/Projects/{}'.format(project_name_), 'creating.project')
         
