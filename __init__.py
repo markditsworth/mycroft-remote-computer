@@ -87,13 +87,18 @@ class RemoteComputerSkill(MycroftSkill):
     @intent_handler(IntentBuilder("LaunchCCS").require("Open").require("Code").require("Composer").optionally("Studio"))
     def handle_launch_ccs_intent(self, message):
         # get working directory if supplied use PEG to pull out the workspace, if any
-        utt = message.data['utterance']
-        self.log.info("{}".format(utt))
+        #utt = message.data['utterance']
+        #self.log.info("{}".format(utt))
+        self.remoteAction('export DISPLAY=:0 && /home/markd/ti/ccs1000/ccs/eclipse/ccstudio',
+                          'launching.ccs')
     
     @intent_handler(IntentBuilder("CreateNewProject").require("Create").require("Project").optionally("New"))
     def handle_create_new_project_intent(self, message):
-        utt = message.data['utterance']
-        self.log.info("{}".format(utt))
+        project_name = message.data['utterance'][2:]
+        project_name_string = ' '.join(project_name)
+        project_name_ = '_'.join(project_name)
+        self.log.info("{}".format(project_name_))
+        self.remoteAction('mkdir /home/markd/Projects/{}'.format(project_name_), 'creating.project')
         
     @intent_handler(IntentBuilder("LaunchJupyterNotebook").require("Open").require("Jupiter").optionally("Notebook"))
     def handle_launch_jupyter_notebook_intent(self, message):
