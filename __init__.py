@@ -17,9 +17,10 @@
 # limitations under the License.
 
 import re
-import paramiko
 import subprocess
 
+from peg import launchApplicationGrammar
+from tatsu.util import asjson
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill
 from mycroft.skills.core import intent_handler
@@ -39,20 +40,6 @@ class RemoteComputerSkill(MycroftSkill):
         try:
             subprocess.run(ssh_command, check=True)
             return
-        except Exception as e:
-            self.speak_dialog("connection.error")
-            self.log.error(e)
-            return
-    
-    def runSSHCommandParamiko(self,command,ip_address,port,user,key):
-        try:
-            client = paramiko.SSHClient()
-            pk = paramiko.RSAKey.from_private_key_file(open('/home/pi/.ssh/{}'.format(key)))
-            client.set_missing_host_key_policy(paramiko.AutoAddPolicy()) 
-            client.connect(ip_address, username=user, port=port, pkey=pk)
-            stdin, stdout, stderr = client.exec_command(command)
-            client.close()
-            return stdin, stdout, stderr
         except Exception as e:
             self.speak_dialog("connection.error")
             self.log.error(e)
@@ -82,7 +69,11 @@ class RemoteComputerSkill(MycroftSkill):
         
         ip_addr = self.macToIp(mac_address)
         self.speak_dialog(voice_response)
-        _ = self.runSSHCommand(command,ip_addr,port,user,key_file)     
+        _ = self.runSSHCommand(command,ip_addr,port,user,key_file)  
+    
+    def parseLaunchApplicationCommand(self, utt):
+        parser = launchApplicationGrammar.LaunchApplicationGrammarParser()
+        return asjson(parser.parse(utt))
         
     @intent_handler(IntentBuilder("LaunchTerminal").require("Open").require("Terminal"))
     def handle_launch_terminal_intent(self, message):
@@ -90,7 +81,15 @@ class RemoteComputerSkill(MycroftSkill):
     
     @intent_handler(IntentBuilder("LaunchSpyder").require("Open").require("Spyder"))
     def handle_launch_spyder_intent(self, message):
-        self.remoteAction('export DISPLAY=:0 && spyder --workdir=/home/markd/Projects', 'launching.spyder')
+        utt = message.data['utterance']
+        parsed_utt = parseLaunchApplicationCommand(utt)
+        workspace = parsed_utt['workingDirectory']
+        self.log.info('workspace: {}'.format(workspace))
+        if not workspace:
+            workspace = ''
+            
+        self.remoteAction('export DISPLAY=:0 && spyder --workdir=/home/markd/Projects/{}'.format(workspace),
+                          'launching.spyder')
     
     @intent_handler(IntentBuilder("LaunchCCS").require("Open").require("Code").require("Composer").optionally("Studio"))
     def handle_launch_ccs_intent(self, message):
