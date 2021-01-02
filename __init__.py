@@ -114,7 +114,7 @@ class RemoteComputerSkill(MycroftSkill):
     @intent_handler(IntentBuilder("CreateNewProject").require("Create").require("Project").optionally("New"))
     def handle_create_new_project_intent(self, message):
         utt = message.data['utterance'].split(' ')
-        idx = utt.index('project') - 1
+        idx = utt.index('project') + 1
         self.createNewProject(utt[idx:])
         
     @intent_handler(IntentBuilder("LaunchJupyterNotebook").require("Open").require("Jupiter").optionally("Notebook"))
