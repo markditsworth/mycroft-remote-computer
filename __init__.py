@@ -32,8 +32,12 @@ class RemoteComputerSkill(MycroftSkill):
     
     def macToIp(self, mac_address):
        out = subprocess.check_output(['ip','neighbor']).decode('utf-8')
-       ip = re.findall(r'.*{}'.format(mac_address),out)[0].split()[0]
-       return ip
+       try:
+           ip = re.findall(r'.*{}'.format(mac_address),out)[0].split()[0]
+           return ip
+       # if mac address is not found, the ARP cache has been cleared.
+       except IndexError:
+           return None
    
     def runSSHCommand(self, command, ip_address, port, user, key):
         ssh_command = ['ssh', '-i', '/home/pi/.ssh/{}'.format(key), '{}@{}'.format(user,ip_address), '-p', '{}'.format(port), command]
@@ -77,12 +81,15 @@ class RemoteComputerSkill(MycroftSkill):
             return
         
         ip_addr = self.macToIp(mac_address)
-        if len(voice_response) > 1:
-            self.speak_dialog(voice_response[0], voice_response[1])
+        if ip_addr is None:
+            self.speak_dialog("ip.not.found")
         else:
-            self.speak_dialog(voice_response[0])
-            
-        _ = self.runSSHCommand(command,ip_addr,port,user,key_file)  
+            if len(voice_response) > 1:
+                self.speak_dialog(voice_response[0], voice_response[1])
+            else:
+                self.speak_dialog(voice_response[0])
+                
+            _ = self.runSSHCommand(command,ip_addr,port,user,key_file)  
     
     # def parseLaunchApplicationCommand(self, utt):
     #     parser = launchApplicationGrammar.LaunchApplicationGrammarParser()
