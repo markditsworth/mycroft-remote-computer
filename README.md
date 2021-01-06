@@ -1,19 +1,11 @@
 # <img src='https://raw.githack.com/FortAwesome/Font-Awesome/master/svgs/solid/desktop.svg' card_color='#000000' width='50' height='50' style='vertical-align:bottom'/> Remote Computer
-Control a remote computer via SSH and Wake on Lan. (Power OFF/ON)
+Control a remote computer via SSH.
 
 ## About 
-Turn OFF/ON your computer via SSH and WOL from mycroft. You must enable SSH Server on your remote computer for Power OFF and also you have to enable Wake on Lan for Power ON.
-
-For Power OFF (Supported Remote Computer OS with SSH Server):
-* Linux
-* Mac
-* Windows
-
-For Power ON (Wake on LAN):
-* Any WOL supported computer
+Launch applications, manage your filesystem, turn off your computer by instructing Mycroft.
 
 ## Installation
-You should be able to install skill via `mycroft-msm install https://github.com/smearumi/mycroft-remote-computer.git` or you can install this skill via Installer Skill from web interface (https://home.mycroft.ai/#/skill). It will take several minutes for installing requirements.
+You should be able to install skill via `mycroft-msm install https://github.com/markditsworth/mycroft-remote-computer.git`
 
 ## Configuration
 You can configure this skill via web interface (home.mycroft.ai). After a few minutes of having the skill installed, you should see configuration options in the https://home.mycroft.ai/#/skill location.
@@ -29,22 +21,27 @@ If you desire total privacy, please edit your config file located at:
 If it does not exist, create it. This file must be contain a valid json, add the following to it:
 
         "RemoteComputerSkill": {
-            "ip_address": "YOUR IP ADDRESS",
-            "mac_address": "YOUR MAC ADDRESS",
+            "mac_address": "YOUR COMPUTER's MAC ADDRESS",
             "port": 22,
             "user": "USER NAME",
-            "user_password": "USER PASSWORD",
-            "sudo_password": "ROOT PASSWORD"
+            "ssh key": "private ssh key file name"
         }  
 
-## Examples 
-* "turn off my computer"
-* "turn my computer off"
-* "shut down the computer"
-* "turn on the computer"
-* "wake up my computer"
+You will need to modify `__init__.py` to use your preffered directory locations. Copy/tweak the intents to have Mycroft use your preffered applications.
+You will also need to ensure your computer's ssh server is up and running and you have it configured for using an RSA key. Copy the private key to your mycroft at `~/.ssh/<key name>`.
 
-## Credits 
+It is recommended to use this skill with a Picroft.
+
+## Examples 
+* "launch a terminal"
+* "create a new project file"
+* "open Spyder"
+* "open up a Jupyter Notebook"
+
+## Credits
+Mark Ditsworth (@markditsworth)
+
+Forked from: 
 S. M. Estiaque Ahmed (@smearumi)
 
 
