@@ -142,7 +142,7 @@ class RemoteComputerSkill(MycroftSkill):
     @intent_handler(IntentBuilder("LaunchVSCode").require("Open").require("Code").
                     optionally("VisualStudio"))
     def handle_launch_vscode_intent(self, message):
-        cmd = 'export DISPLAY=:0 && code --user-data-dir /home/markd/Projects/'
+        cmd = 'export DISPLAY=:0 && code -a /home/markd/Projects/'
         self.remoteAction(cmd, ['launch.app',{'word':'visual studio code'}])
 
     def stop(self):
