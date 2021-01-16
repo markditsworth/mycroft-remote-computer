@@ -111,7 +111,8 @@ class RemoteComputerSkill(MycroftSkill):
 
             else:
                 self.base_dir = str(self.settings.get("base_directory"))
-            
+        
+        self.log.info("setting: {}".format(self.base_dir))
         except Exception as e:
             self.speak_dialog('settings.error')
             self.log.error(e)
@@ -136,7 +137,7 @@ class RemoteComputerSkill(MycroftSkill):
         parsed_utt = asjson(self.PEGParser.parse(utt))
         desired_working_directory = parsed_utt.get('workingDirectory')
         if desired_working_directory is None:
-            return ''
+            return self.base_dir
 
         working_directory = self.checkExistingDirectory(desired_working_directory)
         

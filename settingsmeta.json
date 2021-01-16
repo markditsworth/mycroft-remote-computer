@@ -40,7 +40,7 @@
                         {
                             "name": "base_directory",
                             "type": "text",
-                            "label": "Base Directoty",
+                            "label": "Base Directory",
                             "value": ""
                         }
                     ]
