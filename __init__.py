@@ -143,7 +143,7 @@ class RemoteComputerSkill(MycroftSkill):
         if working_directory is None:
             # create it with underscores
             confirmation = self.ask_yesno('ask.confirmation',
-                                        {'word': ' '.join(desired_working_directory}))
+                                        {'word': ' '.join(desired_working_directory)})
             if confirmation == 'yes':
                 wd = '_'.join(desired_working_directory)
                 self.createNewProject(wd)
