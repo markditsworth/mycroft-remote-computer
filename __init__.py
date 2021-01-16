@@ -167,7 +167,7 @@ class RemoteComputerSkill(MycroftSkill):
                     require("Spyder"))
     def handle_launch_spyder_intent(self, message):
         wd = self.setWorkingDirectory(message.data['utterance'])
-
+        self.log.info("using working directory {}".format(wd))
         cmd = 'export DISPLAY=:0 && spyder --workdir={}'.format(wd)
         self.remoteAction(cmd, ['launch.app',{'word':'spider'}])
     
