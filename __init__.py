@@ -91,10 +91,10 @@ class RemoteComputerSkill(MycroftSkill):
             self.speak_dialog("ip.not.found")
             assert False, "no ip found"
         else:
-            if len(voice_response) > 1:
-                self.speak_dialog(voice_response[0], voice_response[1])
-            elif voice_response == None:
+            if voice_response == None:
                 pass
+            elif len(voice_response) > 1:
+                self.speak_dialog(voice_response[0], voice_response[1])
             else:
                 self.speak_dialog(voice_response[0])
             
