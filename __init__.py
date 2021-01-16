@@ -112,7 +112,7 @@ class RemoteComputerSkill(MycroftSkill):
             else:
                 self.base_dir = str(self.settings.get("base_directory"))
         
-        self.log.info("setting: {}".format(self.base_dir))
+            self.log.info("setting: {}".format(self.base_dir))
         except Exception as e:
             self.speak_dialog('settings.error')
             self.log.error(e)
