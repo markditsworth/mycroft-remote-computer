@@ -1,1 +1,3 @@
-Confirming: Do you wish to {{word}} the computer?
+directory {{ word }} does not exist. Shall I create it?
+there is no project directory {{ word }}. Shall I change that?
+it appears that {{ word }} does not yet exist. confirm its creation

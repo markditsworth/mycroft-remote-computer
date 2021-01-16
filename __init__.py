@@ -19,8 +19,8 @@
 import re
 import subprocess
 
-# from peg import launchApplicationGrammar
-# from tatsu.util import asjson
+from .peg import parser
+from tatsu.util import asjson
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill
 from mycroft.skills.core import intent_handler
@@ -29,6 +29,8 @@ from mycroft.skills.core import intent_handler
 class RemoteComputerSkill(MycroftSkill):
     def __init__(self):
         super(RemoteComputerSkill, self).__init__(name="RemoteComputerSkill")
+
+        self.PEGParser = parser()
     
     def macToIp(self, mac_address):
        out = subprocess.check_output(['ip','neighbor']).decode('utf-8')
@@ -56,15 +58,15 @@ class RemoteComputerSkill(MycroftSkill):
                         '{}@{}'.format(user,ip_address),
                          '-p', '{}'.format(port), command]
         try:
-            output = subprocess.run(ssh_command, capture_output=True, check=True)
-            return output.stdout
+            output = subprocess.run(ssh_command, capture_output=True, check=False)
+            return output.stdout.decode('utf-8')
         
         except Exception as e:
             self.speak_dialog("connection.error")
             self.log.error(e)
             return None
         
-    def remoteAction(self, command, voice_response):
+    def remoteAction(self, command, voice_response, return_output=False):
         try:
             config = self.config_core.get("RemoteComputerSkill", {})
             if not config == {}:
@@ -87,23 +89,73 @@ class RemoteComputerSkill(MycroftSkill):
         ip_addr = self.macToIp(mac_address)
         if ip_addr is None:
             self.speak_dialog("ip.not.found")
+            assert False, "no ip found"
         else:
             if len(voice_response) > 1:
                 self.speak_dialog(voice_response[0], voice_response[1])
+            elif voice_response == None:
+                pass
             else:
                 self.speak_dialog(voice_response[0])
-                
-            res = self.runSSHCommand(command,ip_addr,port,user,key_file)  
+            
+            if return_output:
+                return self.runSSHCommandWithResult(command, ip_addr,port,user,key_file)
+            else:
+                res = self.runSSHCommand(command,ip_addr,port,user,key_file)  
     
-    # def parseLaunchApplicationCommand(self, utt):
-    #     parser = launchApplicationGrammar.LaunchApplicationGrammarParser()
-    #     return asjson(parser.parse(utt))
+    def getDirectoryRoot(self):
+        try:
+            config = self.config_core.get("RemoteComputerSkill", {})
+            if not config == {}:
+                self.base_dir = str(config.get("base_directory"))
+
+            else:
+                self.base_dir = str(self.settings.get("base_directory"))
+            
+        except Exception as e:
+            self.speak_dialog('settings.error')
+            self.log.error(e)
+            return
+
+    def checkExistingDirectory(self, directory):
+        self.getDirectoryRoot()
+        directory_with_underscores = '_'.join(directory)
+        directory_with_dashes = '-'.join(directory)
+
+        base_directory_contents = self.remoteAction('ls {}'.format(self.base_dir), None,
+                                                    return_output=True).split()
+
+        if directory_with_underscores in base_directory_contents:
+            return directory_with_underscores
+        elif directory_with_dashes in base_directory_contents:
+            return directory_with_dashes
+        else:
+            return None
+
+    def setWorkingDirectory(self, utt):
+        parsed_utt = asjson(self.PEGParser.parse(utt))
+        desired_working_directory = parsed_utt.get('workingDirectory')
+        if desired_working_directory is None:
+            return ''
+
+        working_directory = self.checkExistingDirectory(desired_working_directory)
+        
+        if working_directory is None:
+            # create it with underscores
+            confirmation = self.ask_yesno('ask.confirmation',
+                                        {'word': ' '.join(desired_working_directory}))
+            if confirmation == 'yes':
+                wd = '_'.join(desired_working_directory)
+                self.createNewProject(wd)
+                return "{}/{}".format(self.base_dir, wd)
+            else:
+                return ''
+        else:
+            return "{}/{}".format(self.base_dir,working_directory)
     
     def createNewProject(self, project_name):
-        project_name_string = ' '.join(project_name)
-        project_name_ = '_'.join(project_name)
-        self.remoteAction('mkdir /home/markd/Projects/{}'.format(project_name_),
-                          ['creating.project',{'word':project_name_string}])
+        self.remoteAction('mkdir {}/{}'.format(self.base_dir,project_name),
+                          ['creating.project',{'word':project_name.replace('_',' ')}])
         
     @intent_handler(IntentBuilder("LaunchTerminal").require("Open").
                     require("Terminal"))
@@ -114,7 +166,9 @@ class RemoteComputerSkill(MycroftSkill):
     @intent_handler(IntentBuilder("LaunchSpyder").require("Open").
                     require("Spyder"))
     def handle_launch_spyder_intent(self, message):
-        cmd = 'export DISPLAY=:0 && spyder --workdir=/home/markd/Projects/'
+        wd = self.setWorkingDirectory(message['utterance'])
+
+        cmd = 'export DISPLAY=:0 && spyder --workdir={}/{}'.format(self.base_dir,wd)
         self.remoteAction(cmd, ['launch.app',{'word':'spider'}])
     
     @intent_handler(IntentBuilder("LaunchCCS").require("Open").require("Code").

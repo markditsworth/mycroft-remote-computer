@@ -1,0 +1,41 @@
+@@grammar::LaunchApplicationGrammar
+
+start = expr $ ;
+
+expr
+    = launch:launchCode app:application [ preposition ] workspaceWord:[ workspace ] workingDirectory:[ { word }+ ] $ ;
+
+workspace
+    =
+    | 'workspace'
+    | [ 'working' ] 'directory'
+    | 'project' [ ( 'name' | 'title' | 'index' ) ]
+    ;
+
+preposition
+    =
+    | 'in'
+    | 'at'
+    | 'with'
+    | 'on'
+    | 'within'
+    | 'inside'
+    | 'for'
+    ;
+    
+launchCode
+    =
+    | 'open'
+    | 'launch'
+    ;
+
+application
+    =
+    | 'code' 'composer' [ 'studio' ]
+    | 'spider'
+    | 'jupiter'
+    | 'visual' 'studio' [ 'code' ]
+    | word
+    ;
+    
+word = /[a-z]+/ ;
