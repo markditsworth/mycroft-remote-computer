@@ -149,7 +149,7 @@ class RemoteComputerSkill(MycroftSkill):
                 self.createNewProject(wd)
                 return "{}/{}".format(self.base_dir, wd)
             else:
-                return ''
+                return self.base_dir
         else:
             return "{}/{}".format(self.base_dir,working_directory)
     
@@ -168,7 +168,7 @@ class RemoteComputerSkill(MycroftSkill):
     def handle_launch_spyder_intent(self, message):
         wd = self.setWorkingDirectory(message.data['utterance'])
 
-        cmd = 'export DISPLAY=:0 && spyder --workdir={}/{}'.format(self.base_dir,wd)
+        cmd = 'export DISPLAY=:0 && spyder --workdir={}'.format(wd)
         self.remoteAction(cmd, ['launch.app',{'word':'spider'}])
     
     @intent_handler(IntentBuilder("LaunchCCS").require("Open").require("Code").
