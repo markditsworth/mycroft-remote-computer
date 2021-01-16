@@ -36,6 +36,12 @@
                             "type": "text",
                             "label": "Private Key File:",
                             "value": ""
+                        },
+                        {
+                            "name": "base_directory",
+                            "type": "text",
+                            "label": "Base Directoty",
+                            "value": ""
                         }
                     ]
                 }
