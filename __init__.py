@@ -89,7 +89,7 @@ class RemoteComputerSkill(MycroftSkill):
         ip_addr = self.macToIp(mac_address)
         if ip_addr is None:
             self.speak_dialog("ip.not.found")
-            assert False, "no ip found"
+            return None
         else:
             if voice_response == None:
                 pass
