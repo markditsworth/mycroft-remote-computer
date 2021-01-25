@@ -122,7 +122,7 @@ class RemoteComputerSkill(MycroftSkill):
         self.getDirectoryRoot()
         directory_with_underscores = '_'.join(directory)
         directory_with_dashes = '-'.join(directory)
-
+        self.log.info(directory_with_underscores)
         base_directory_contents = self.remoteAction('ls {}'.format(self.base_dir), None,
                                                     return_output=True).split()
 
